@@ -4,6 +4,7 @@
 Using SDL2 create an application that displays a 2d sphere but using a moving light source give it the effect of looking 3d
 The light will follow the location of the mouse
 
+<img width="802" alt="Screenshot 2025-03-19 at 10 16 01 AM" src="https://github.com/user-attachments/assets/32169fa5-10df-4c7c-aab0-9f2bb84feef0" />
 
 Requirements
 
@@ -33,7 +34,6 @@ once the tab comes up use the keybind command + shift + G <br />
 then search  <br />    <br /> 
 /opt/homebrew/opt/sdl2/lib    <br /> 
 Add libSDL2-2.0.0.dylib to your project(it will say open instead of add but it will add) <br /><br />
-
 
 5)Set Up Header Search Paths <br />
 Select your project in the Project Navigator (left-hand side). <br />
