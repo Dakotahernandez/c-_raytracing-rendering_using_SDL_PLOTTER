@@ -1,4 +1,10 @@
 # c-_raytracing-rendering_using_SDL_PLOTTER
+
+#GOALS
+Using SDL2 create an application that displays a 2d sphere but using a moving light source give it the effect of looking 3d
+The light will follow the location of the mouse
+
+
 Requirements
 
 SDL2
