@@ -1,18 +1,16 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "RayTracer.h"
+#include "Vec3.h"
 
-// Map the mouse coordinates (in screen space) to a 2D range in world space.
-// For example, we let the light move in the plane z = -2, with x in [-2, 2] and y in [-1.5, 1.5].
+// Map mouse coordinates to a world-space light position.
+// The light moves on the plane z = -2.
 static Vec3 mapMouseToWorld(int mouseX, int mouseY, int screenWidth, int screenHeight) {
-    // Choose a comfortable range for the light to move around.
-    double rangeX = 4.0;  // covers x in [-2..2]
-    double rangeY = 3.0;  // covers y in [-1.5..1.5]
+    double rangeX = 4.0;  // x ∈ [-2, 2]
+    double rangeY = 3.0;  // y ∈ [-1.5, 1.5]
     
     double worldX = (double(mouseX) / double(screenWidth)) * rangeX - (rangeX / 2.0);
-    double worldY = -( (double(mouseY) / double(screenHeight)) * rangeY - (rangeY / 2.0) );
-    
-    // Keep z = -2 so the light is "in front" of the sphere at z = -5
+    double worldY = -((double(mouseY) / double(screenHeight)) * rangeY - (rangeY / 2.0));
     double worldZ = -2.0;
     
     return Vec3(worldX, worldY, worldZ);
@@ -56,39 +54,49 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // Allocate a pixel buffer for the rendered image
+    // Allocate pixel buffer
     uint32_t* pixels = new uint32_t[width * height];
     
-    // Create our RayTracer and set initial light position
+    // Create our ray tracer and set an initial light position.
     RayTracer tracer(width, height);
     Vec3 lightPos(0.0, 0.0, -2.0);
     tracer.setLightPosition(lightPos);
+    
+    // Variables to track mouse position (initialize to center)
+    int mouseX = width / 2;
+    int mouseY = height / 2;
     
     bool quit = false;
     SDL_Event e;
     
     while (!quit) {
-        // Handle events
+        // Process events.
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
             else if (e.type == SDL_MOUSEMOTION) {
-                // Update light position based on mouse coordinates
+                // Update mouse position and light position.
+                mouseX = e.motion.x;
+                mouseY = e.motion.y;
                 Vec3 newLightPos = mapMouseToWorld(e.motion.x, e.motion.y, width, height);
                 tracer.setLightPosition(newLightPos);
             }
         }
         
-        // Render the scene
+        // Render the scene.
         tracer.render(pixels);
-        
-        // Update texture
         SDL_UpdateTexture(texture, NULL, pixels, width * sizeof(uint32_t));
         
-        // Draw to screen
+        // Clear the renderer and copy the texture.
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
+        
+        // Draw a green line from the center of the sphere (screen center) to the mouse position.
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // green color
+        SDL_RenderDrawLine(renderer, width / 2, height / 2, mouseX, mouseY);
+        
+        // Present the updated renderer.
         SDL_RenderPresent(renderer);
     }
     
